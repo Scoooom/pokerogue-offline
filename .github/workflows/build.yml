@@ -25,9 +25,6 @@ jobs:
       - name: Clone PokeRogue
         run: git clone --recurse-submodules --depth 1 --branch main https://github.com/pagefaultgames/pokerogue.git pokerogue-src
 
-      - name: Find logo
-        run: find pokerogue-src -name "logo512.png"
-
       - name: Get PokeRogue version
         id: pokerogue_version
         run: |
@@ -36,7 +33,7 @@ jobs:
 
       - name: Copy and resize app icon
         run: |
-          sips -z 1024 1024 pokerogue-src/public/logo512.png --out PokeRogueOffline/Assets.xcassets/AppIcon.appiconset/icon.png
+          sips -z 1024 1024 pokerogue-src/assets/logo512.png --out PokeRogueOffline/Assets.xcassets/AppIcon.appiconset/icon.png
 
       - name: Install PokeRogue dependencies
         working-directory: pokerogue-src
