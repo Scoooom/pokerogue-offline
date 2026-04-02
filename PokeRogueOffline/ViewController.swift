@@ -56,15 +56,8 @@ server["/"] = { _ in
     return HttpResponse.notFound
 }
 
-server["/:path"] = { request in
-    let filePath = webDir.appendingPathComponent(request.params[":path"] ?? "").path
-    if let data = FileManager.default.contents(atPath: filePath) {
-        return HttpResponse.raw(200, "OK", nil, { writer in
-            try writer.write(data)
-        })
-    }
-    return HttpResponse.notFound
-}
+server["/(.*)"] = shareFilesFromDirectory(webDir.path)
+
         do {
             try server.start(8080, forceIPv4: true)
             print("Server started on port 8080")
