@@ -46,19 +46,25 @@ class ViewController: UIViewController,	WKNavigationDelegate {
             return
         }
 
-        server = HttpServer()
-server["/test"] = { _ in
-    return HttpResponse.ok(.text("Server is working"))
-}
-        server["/(.+)"] = shareFilesFromDirectory(webDir.path)
-        server["/"] = { _ in
-            let indexPath = webDir.appendingPathComponent("index.html").path
-            if let content = try? String(contentsOfFile: indexPath, encoding: .utf8) {
-                return HttpResponse.ok(.html(content))
-            }
-            return HttpResponse.notFound
-        }
+server = HttpServer()
 
+server["/"] = { _ in
+    let indexPath = webDir.appendingPathComponent("index.html").path
+    if let content = try? String(contentsOfFile: indexPath, encoding: .utf8) {
+        return HttpResponse.ok(.html(content))
+    }
+    return HttpResponse.notFound
+}
+
+server["/:path"] = { request in
+    let filePath = webDir.appendingPathComponent(request.params[":path"] ?? "").path
+    if let data = FileManager.default.contents(atPath: filePath) {
+        return HttpResponse.raw(200, "OK", nil, { writer in
+            try writer.write(data)
+        })
+    }
+    return HttpResponse.notFound
+}
         do {
             try server.start(8080, forceIPv4: true)
             print("Server started on port 8080")
@@ -73,7 +79,7 @@ server["/test"] = { _ in
             webView.load(request)
         }
     }
-
+**/
     func loadGame() {
         if let url = URL(string: "http://localhost:8080/") {
             let request = URLRequest(url: url)
@@ -82,13 +88,6 @@ server["/test"] = { _ in
             showError("Failed to create URL")
         } 
     }
-*/
-func loadGame() {
-    if let url = URL(string: "http://localhost:8080/test") {
-        let request = URLRequest(url: url)
-        webView.load(request)
-    }
-}
 
     func showError(_ message: String) {
         let label = UILabel()
