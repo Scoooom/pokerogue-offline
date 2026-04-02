@@ -61,10 +61,6 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CONFIGURATION_BUILD_DIR=$PWD/build
 
-      - name: Find built app
-        run: find . -name "*.app" -type d
-
-
       - name: Package IPA
         run: |
           mkdir -p Payload
