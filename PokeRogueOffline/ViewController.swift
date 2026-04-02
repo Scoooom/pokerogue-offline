@@ -9,8 +9,8 @@ class ViewController: UIViewController, WKNavigationDelegate {
 
         let config = WKWebViewConfiguration()
 
-	config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
-	config.preferences.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
+	// config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
+	// config.preferences.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
 
         // Allow local storage and session storage to persist
         config.websiteDataStore = WKWebsiteDataStore.default()
