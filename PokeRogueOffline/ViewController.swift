@@ -1,21 +1,18 @@
 import UIKit
 import WebKit
+import Swifter
 
 class ViewController: UIViewController, WKNavigationDelegate {
     var webView: WKWebView!
+    var server: HttpServer!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        startLocalServer()
+
         let config = WKWebViewConfiguration()
-
-	// config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
-	// config.preferences.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
-
-        // Allow local storage and session storage to persist
         config.websiteDataStore = WKWebsiteDataStore.default()
-
-        // Allow audio to play without user interaction (for game sounds)
         config.allowsInlineMediaPlayback = true
         config.mediaTypesRequiringUserActionForPlayback = []
 
@@ -29,15 +26,35 @@ class ViewController: UIViewController, WKNavigationDelegate {
         loadGame()
     }
 
-    func loadGame() {
-        guard let webDir = Bundle.main.url(forResource: "web", withExtension: nil),
-              let indexURL = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "web")
-        else {
-            showError("Could not find game files.")
+    func startLocalServer() {
+        guard let webDir = Bundle.main.resourceURL?.appendingPathComponent("web") else {
+            print("Could not find web directory")
             return
         }
 
-        webView.loadFileURL(indexURL, allowingReadAccessTo: webDir)
+        server = HttpServer()
+        server["/(.+)"] = shareFilesFromDirectory(webDir.path)
+        server["/"] = { _ in
+            let indexPath = webDir.appendingPathComponent("index.html").path
+            if let content = try? String(contentsOfFile: indexPath, encoding: .utf8) {
+                return HttpResponse.ok(.html(content))
+            }
+            return HttpResponse.notFound
+        }
+
+        do {
+            try server.start(8080, forceIPv4: true)
+            print("Server started on port 8080")
+        } catch {
+            print("Server failed to start: \(error)")
+        }
+    }
+
+    func loadGame() {
+        if let url = URL(string: "http://localhost:8080/") {
+            let request = URLRequest(url: url)
+            webView.load(request)
+        }
     }
 
     func showError(_ message: String) {
@@ -56,5 +73,9 @@ class ViewController: UIViewController, WKNavigationDelegate {
 
     override var prefersHomeIndicatorAutoHidden: Bool {
         return true
+    }
+
+    deinit {
+        server?.stop()
     }
 }

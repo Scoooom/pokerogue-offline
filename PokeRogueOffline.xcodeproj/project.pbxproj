@@ -11,6 +11,7 @@
 		A11B0002 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11A0002 /* ViewController.swift */; };
 		A11B0003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A11A0003 /* Assets.xcassets */; };
 		A11B0004 /* web in Resources */ = {isa = PBXBuildFile; fileRef = A11A0004 /* web */; };
+		A11B0005 /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = A11B0006 /* Swifter */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A11B0005 /* Swifter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,6 +79,9 @@
 			dependencies = (
 			);
 			name = PokeRogueOffline;
+			packageProductDependencies = (
+				A11B0006 /* Swifter */,
+			);
 			productName = PokeRogueOffline;
 			productReference = A11A0000 /* PokeRogueOffline.app */;
 			productType = "com.apple.product-type.application";
@@ -105,6 +110,9 @@
 				Base,
 			);
 			mainGroup = A11D0000 /* Root */;
+			packageReferences = (
+				A11G0001 /* XCRemoteSwiftPackageReference "Swifter" */,
+			);
 			productRefGroup = A11D0002 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -113,6 +121,25 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A11G0001 /* XCRemoteSwiftPackageReference "Swifter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/httpswift/swifter.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = "1.5.0";
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A11B0006 /* Swifter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A11G0001 /* XCRemoteSwiftPackageReference "Swifter" */;
+			productName = Swifter;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin PBXResourcesBuildPhase section */
 		A11C0002 /* Resources */ = {
@@ -275,7 +302,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.scooom.pokerogueoffline;
-				PRODUCT_NAME = "PokeRogueOffline";
+				PRODUCT_NAME = "Pok√©Rogue Offline";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -303,7 +330,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.scooom.pokerogueoffline;
-				PRODUCT_NAME = "PokeRogueOffline";
+				PRODUCT_NAME = "Pok√©Rogue Offline";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
