@@ -58,7 +58,7 @@ jobs:
       - name: Package IPA
         run: |
           mkdir -p Payload
-          cp -r build/PokeRogueOffline.app Payload/
+          cp -r "build/PokéRogue Offline.app" Payload/
           zip -r PokéRogueOffline.ipa Payload
           rm -rf Payload
 
