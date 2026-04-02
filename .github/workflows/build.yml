@@ -25,6 +25,9 @@ jobs:
       - name: Clone PokeRogue
         run: git clone --recurse-submodules --depth 1 --branch main https://github.com/pagefaultgames/pokerogue.git pokerogue-src
 
+      - name: Find logo
+        run: find pokerogue-src -name "logo512.png"
+
       - name: Get PokeRogue version
         id: pokerogue_version
         run: |
