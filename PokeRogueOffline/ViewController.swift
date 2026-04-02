@@ -94,7 +94,7 @@ class ViewController: UIViewController, WKNavigationDelegate {
     }
 
     func loadGame() {
-        if let url = URL(string: "http://localhost:8080/assets/index-DFiTm1Uv.js") {
+        if let url = URL(string: "http://localhost:8080/assets/index.js") {
             let request = URLRequest(url: url)
             webView.load(request)
         }
