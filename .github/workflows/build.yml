@@ -68,6 +68,12 @@ jobs:
           mkdir -p PokeRogueOffline/web
           cp -r pokerogue-src/dist/* PokeRogueOffline/web/
 
+      - name: Set index filename
+        run: |
+          HASHED=$(ls PokeRogueOffline/web/assets/index-*.js | head -1 | xargs basename)
+          echo "Found index: $HASHED"
+          sed -i '' "s/index-PLACEHOLDER.js/$HASHED/g" PokeRogueOffline/ViewController.swift
+
       - name: Build Xcode project (unsigned)
         run: |
           xcodebuild \
