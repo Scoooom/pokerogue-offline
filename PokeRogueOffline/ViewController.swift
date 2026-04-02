@@ -17,6 +17,20 @@ class ViewController: UIViewController, WKNavigationDelegate {
         config.mediaTypesRequiringUserActionForPlayback = []
 
         webView = WKWebView(frame: view.bounds, configuration: config)
+	webView.configuration.userContentController.add(self, name: "logger")
+	let logScript = WKUserScript(
+	    source: """
+	    window.onerror = function(msg, url, line) {
+		window.webkit.messageHandlers.logger.postMessage('ERROR: ' + msg + ' at ' + url + ':' + line);
+	    };
+	    console.log = function(msg) {
+	        window.webkit.messageHandlers.logger.postMessage('LOG: ' + msg);
+	    };
+	    """,
+	    injectionTime: .atDocumentStart,
+		 forMainFrameOnly: false
+	)
+	webView.configuration.userContentController.addUserScript(logScript)
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         webView.navigationDelegate = self
         webView.scrollView.isScrollEnabled = false
@@ -77,5 +91,10 @@ class ViewController: UIViewController, WKNavigationDelegate {
 
     deinit {
         server?.stop()
+    }
+}
+extension ViewController: WKScriptMessageHandler {
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        print("JS: \(message.body)")
     }
 }
