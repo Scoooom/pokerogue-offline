@@ -41,6 +41,11 @@ class ViewController: UIViewController, WKNavigationDelegate {
             }
             return HttpResponse.notFound
         }
+        
+        server["/debug"] = { _ in
+            let contents = (try? FileManager.default.contentsOfDirectory(atPath: webDir.path)) ?? []
+            return HttpResponse.ok(.text(contents.joined(separator: "\n")))
+        }
 
         server["/(.*)"] = shareFilesFromDirectory(webDir.path)
 
@@ -52,7 +57,7 @@ class ViewController: UIViewController, WKNavigationDelegate {
     }
 
     func loadGame() {
-        if let url = URL(string: "http://localhost:8080/") {
+        if let url = URL(string: "http://localhost:8080/debug") {
             let request = URLRequest(url: url)
             webView.load(request)
         } else {
