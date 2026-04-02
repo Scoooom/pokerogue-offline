@@ -275,7 +275,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.scooom.pokerogueoffline;
-				PRODUCT_NAME = "PokéRogue Offline";
+				PRODUCT_NAME = "PokeRogueOffline";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -303,7 +303,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.scooom.pokerogueoffline;
-				PRODUCT_NAME = "PokéRogue Offline";
+				PRODUCT_NAME = "PokeRogueOffline";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
