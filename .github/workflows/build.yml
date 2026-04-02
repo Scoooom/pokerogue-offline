@@ -25,6 +25,24 @@ jobs:
       - name: Clone PokeRogue
         run: git clone --recurse-submodules --depth 1 --branch main https://github.com/pagefaultgames/pokerogue.git pokerogue-src
 
+      - name: Create Vite config override
+        working-directory: pokerogue-src
+        run: |
+          cat > vite.config.override.js << 'EOF'
+          import { defineConfig } from 'vite'
+          export default defineConfig({
+            build: {
+              rollupOptions: {
+                output: {
+                  entryFileNames: 'assets/index.js',
+                  chunkFileNames: 'assets/[name].js',
+                  assetFileNames: 'assets/[name].[ext]'
+                }
+              }
+            }
+          })
+          EOF
+
       - name: Get PokeRogue version
         id: pokerogue_version
         run: |
@@ -43,7 +61,7 @@ jobs:
         working-directory: pokerogue-src
         env:
           VITE_BYPASS_LOGIN: '1'
-        run: pnpm build -- --config '{"build":{"rollupOptions":{"output":{"entryFileNames":"assets/index.js","chunkFileNames":"assets/[name].js","assetFileNames":"assets/[name].[ext]"}}}}'
+        run: pnpm build --config vite.config.override.js
 
       - name: Copy dist into Xcode project
         run: |
