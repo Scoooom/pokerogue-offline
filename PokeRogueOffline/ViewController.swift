@@ -21,6 +21,18 @@ class ViewController: UIViewController, WKNavigationDelegate {
         webView.navigationDelegate = self
         webView.scrollView.isScrollEnabled = false
         webView.scrollView.bounces = false
+        
+        let errorScript = WKUserScript(
+            source: """
+            window.onerror = function(msg, url, line, col, err) {
+                document.body.innerHTML = '<pre style="color:white;background:black;padding:20px;font-size:12px;">ERROR: ' + msg + '\\nURL: ' + url + '\\nLine: ' + line + '\\n\\n' + (err ? err.stack : '') + '</pre>';
+                return true;
+            };
+            """,
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: false
+        )
+        webView.configuration.userContentController.addUserScript(errorScript)
         view.addSubview(webView)
 
         loadGame()
