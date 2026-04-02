@@ -47,6 +47,9 @@ class ViewController: UIViewController,	WKNavigationDelegate {
         }
 
         server = HttpServer()
+server["/test"] = { _ in
+    return HttpResponse.ok(.text("Server is working"))
+}
         server["/(.+)"] = shareFilesFromDirectory(webDir.path)
         server["/"] = { _ in
             let indexPath = webDir.appendingPathComponent("index.html").path
@@ -70,7 +73,7 @@ class ViewController: UIViewController,	WKNavigationDelegate {
             webView.load(request)
         }
     }
-*/
+
     func loadGame() {
         if let url = URL(string: "http://localhost:8080/") {
             let request = URLRequest(url: url)
@@ -79,6 +82,14 @@ class ViewController: UIViewController,	WKNavigationDelegate {
             showError("Failed to create URL")
         } 
     }
+*/
+func loadGame() {
+    if let url = URL(string: "http://localhost:8080/test") {
+        let request = URLRequest(url: url)
+        webView.load(request)
+    }
+}
+
     func showError(_ message: String) {
         let label = UILabel()
         label.text = message
