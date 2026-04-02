@@ -22,6 +22,12 @@ jobs:
       - name: Clone PokeRogue
         run: git clone --recurse-submodules --depth 1 --branch main https://github.com/pagefaultgames/pokerogue.git pokerogue-src
 
+      - name: Get PokeRogue version
+        id: pokerogue_version
+        run: |
+          VERSION=$(node -p "require('./pokerogue-src/package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Copy and resize app icon
         run: |
           sips -z 1024 1024 pokerogue-src/public/logo512.png --out PokeRogueOffline/Assets.xcassets/AppIcon.appiconset/icon.png
@@ -68,3 +74,12 @@ jobs:
           name: PokéRogueOffline
           path: PokéRogueOffline.ipa
           retention-days: 30
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.pokerogue_version.outputs.version }}-${{ github.run_number }}
+          name: PokéRogue Offline v${{ steps.pokerogue_version.outputs.version }}
+          files: PokéRogueOffline.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
