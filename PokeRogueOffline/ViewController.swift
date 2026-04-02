@@ -2,7 +2,7 @@ import UIKit
 import WebKit
 import Swifter
 
-class ViewController: UIViewController, WKNavigationDelegate {
+class ViewController: UIViewController, 	WKNavigationDelegate {
     var webView: WKWebView!
     var server: HttpServer!
 
@@ -63,14 +63,22 @@ class ViewController: UIViewController, WKNavigationDelegate {
             print("Server failed to start: \(error)")
         }
     }
-
+/** 
     func loadGame() {
         if let url = URL(string: "http://localhost:8080/") {
             let request = URLRequest(url: url)
             webView.load(request)
         }
     }
-
+*/
+    func loadGame() {
+        if let url = URL(string: "http://localhost:8080/") {
+            let request = URLRequest(url: url)
+            webView.load(request)
+        } else {
+            showError("Failed to create URL")
+        } 
+    }
     func showError(_ message: String) {
         let label = UILabel()
         label.text = message
@@ -80,6 +88,14 @@ class ViewController: UIViewController, WKNavigationDelegate {
         view.backgroundColor = .black
         view.addSubview(label)
     }
+
+func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+    showError("Failed to load: \(error.localizedDescription)")
+}
+
+func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+    showError("Navigation failed: \(error.localizedDescription)")
+}
 
     override var prefersStatusBarHidden: Bool {
         return true
