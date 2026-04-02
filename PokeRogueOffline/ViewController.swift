@@ -47,8 +47,33 @@ class ViewController: UIViewController, WKNavigationDelegate {
             return HttpResponse.ok(.text(contents.joined(separator: "\n")))
         }
 
-        server["/(.*)"] = shareFilesFromDirectory(webDir.path)
+        server["/(.*)"] = { request in
+            let relativePath = request.params.first?.value ?? ""
+            let filePath = webDir.appendingPathComponent(relativePath).path
 
+            if FileManager.default.fileExists(atPath: filePath) {
+                if let data = FileManager.default.contents(atPath: filePath) {
+                    // Determine MIME type
+                    let ext = (relativePath as NSString).pathExtension.lowercased()
+                    let mime: String
+                    switch ext {
+                    case "js": mime = "application/javascript"
+                    case "css": mime = "text/css"
+                    case "html": mime = "text/html"
+                    case "png": mime = "image/png"
+                    case "jpg", "jpeg": mime = "image/jpeg"
+                    case "json": mime = "application/json"
+                    case "wav", "mp3", "ogg": mime = "audio/\(ext)"
+                    case "woff2": mime = "font/woff2"
+                    default: mime = "application/octet-stream"
+                    }
+                    return HttpResponse.raw(200, "OK", ["Content-Type": mime], { writer in
+                        try writer.write(data)
+                    })
+                }
+            }
+            return HttpResponse.notFound
+        }
         do {
             try server.start(8080, forceIPv4: true)
         } catch {
@@ -57,7 +82,7 @@ class ViewController: UIViewController, WKNavigationDelegate {
     }
 
     func loadGame() {
-        if let url = URL(string: "http://localhost:8080/debug") {
+        if let url = URL(string: "http://localhost:8080/") {
             let request = URLRequest(url: url)
             webView.load(request)
         } else {
