@@ -21,18 +21,6 @@ class ViewController: UIViewController, WKNavigationDelegate {
         webView.navigationDelegate = self
         webView.scrollView.isScrollEnabled = false
         webView.scrollView.bounces = false
-        
-        let errorScript = WKUserScript(
-            source: """
-            window.onerror = function(msg, url, line, col, err) {
-                document.body.innerHTML = '<pre style="color:white;background:black;padding:20px;font-size:12px;">ERROR: ' + msg + '\\nURL: ' + url + '\\nLine: ' + line + '\\n\\n' + (err ? err.stack : '') + '</pre>';
-                return true;
-            };
-            """,
-            injectionTime: .atDocumentStart,
-            forMainFrameOnly: false
-        )
-        webView.configuration.userContentController.addUserScript(errorScript)
         view.addSubview(webView)
 
         loadGame()
@@ -46,46 +34,43 @@ class ViewController: UIViewController, WKNavigationDelegate {
 
         server = HttpServer()
 
-        server["/"] = { _ in
-            let indexPath = webDir.appendingPathComponent("index.html").path
-            if let content = try? String(contentsOfFile: indexPath, encoding: .utf8) {
-                return HttpResponse.ok(.html(content))
-            }
-            return HttpResponse.notFound
-        }
-        
-        server["/debug"] = { _ in
-            let contents = (try? FileManager.default.contentsOfDirectory(atPath: webDir.path)) ?? []
-            return HttpResponse.ok(.text(contents.joined(separator: "\n")))
-        }
-
         server["/(.*)"] = { request in
-            let relativePath = request.params.first?.value ?? ""
+            var relativePath = request.params.first?.value ?? ""
+            if relativePath.isEmpty {
+                relativePath = "index.html"
+            }
+
             let filePath = webDir.appendingPathComponent(relativePath).path
 
-            if FileManager.default.fileExists(atPath: filePath) {
-                if let data = FileManager.default.contents(atPath: filePath) {
-                    // Determine MIME type
-                    let ext = (relativePath as NSString).pathExtension.lowercased()
-                    let mime: String
-                    switch ext {
-                    case "js": mime = "application/javascript"
-                    case "css": mime = "text/css"
-                    case "html": mime = "text/html"
-                    case "png": mime = "image/png"
-                    case "jpg", "jpeg": mime = "image/jpeg"
-                    case "json": mime = "application/json"
-                    case "wav", "mp3", "ogg": mime = "audio/\(ext)"
-                    case "woff2": mime = "font/woff2"
-                    default: mime = "application/octet-stream"
-                    }
-                    return HttpResponse.raw(200, "OK", ["Content-Type": mime], { writer in
-                        try writer.write(data)
-                    })
-                }
+            guard FileManager.default.fileExists(atPath: filePath),
+                  let data = FileManager.default.contents(atPath: filePath) else {
+                return HttpResponse.notFound
             }
-            return HttpResponse.notFound
+
+            let ext = (relativePath as NSString).pathExtension.lowercased()
+            let mime: String
+            switch ext {
+            case "js": mime = "application/javascript"
+            case "css": mime = "text/css"
+            case "html": mime = "text/html"
+            case "png": mime = "image/png"
+            case "jpg", "jpeg": mime = "image/jpeg"
+            case "json": mime = "application/json"
+            case "wav": mime = "audio/wav"
+            case "mp3": mime = "audio/mpeg"
+            case "ogg": mime = "audio/ogg"
+            case "woff2": mime = "font/woff2"
+            case "woff": mime = "font/woff"
+            case "ttf": mime = "font/ttf"
+            case "webmanifest": mime = "application/manifest+json"
+            default: mime = "application/octet-stream"
+            }
+
+            return HttpResponse.raw(200, "OK", ["Content-Type": mime], { writer in
+                try writer.write(data)
+            })
         }
+
         do {
             try server.start(8080, forceIPv4: true)
         } catch {
@@ -94,9 +79,8 @@ class ViewController: UIViewController, WKNavigationDelegate {
     }
 
     func loadGame() {
-        if let url = URL(string: "http://localhost:8080/assets/index-PLACEHOLDER.js") {
-            let request = URLRequest(url: url)
-            webView.load(request)
+        if let url = URL(string: "http://localhost:8080/") {
+            webView.load(URLRequest(url: url))
         }
     }
 
@@ -121,15 +105,8 @@ class ViewController: UIViewController, WKNavigationDelegate {
         showError("Navigation failed: \(error.localizedDescription)")
     }
 
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
+    override var prefersStatusBarHidden: Bool { return true }
+    override var prefersHomeIndicatorAutoHidden: Bool { return true }
 
-    override var prefersHomeIndicatorAutoHidden: Bool {
-        return true
-    }
-
-    deinit {
-        server?.stop()
-    }
+    deinit { server?.stop() }
 }
